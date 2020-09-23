@@ -58,6 +58,8 @@ class scheduler:
     def schedule_processes(self):
         while self.ready_queue:
 
+            process_switch = False
+
             # Selects the current process based on the other acceptable processes in the queue
             for process in self.ready_queue:
                 if ((self.current_process is None) & (process.total_arrival_time <= self.arrival_iterate)):
@@ -72,6 +74,7 @@ class scheduler:
                     process.total_ctxs_time += process.ctxs_time
                     self.total_ctxs_time += self.current_process.ctxs_time + process.ctxs_time
 
+                    process_switch = True
                     self.current_process = process 
             
             self.arrival_iterate += 1
@@ -80,7 +83,9 @@ class scheduler:
             if (self.current_process is not None):
                 self.total_time += self.time_slice
                 self.current_process.total_time += self.time_slice
-                self.current_process.burst_clock += self.time_slice
+                
+                if (not process_switch):
+                    self.current_process.burst_clock += self.time_slice
 
                 if (self.current_process.burst_clock >= self.current_process.burst_time):
                     self.current_process.total_ctxs_time += self.current_process.ctxs_time
@@ -111,10 +116,3 @@ def main():
         
 if __name__ == "__main__":
     main()
-
-        
-
-
-            
-
-            
